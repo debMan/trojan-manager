@@ -106,9 +106,10 @@ class TrojanDatabase:
                "id INT UNSIGNED NOT NULL AUTO_INCREMENT,",
                "username VARCHAR(64) NOT NULL,",
                "password CHAR(56) NOT NULL,",
-               "quota BIGINT NOT NULL DEFAULT 0,",
+               "quota BIGINT NOT NULL DEFAULT 1000000000,",
                "download BIGINT UNSIGNED NOT NULL DEFAULT 0,",
                "upload BIGINT UNSIGNED NOT NULL DEFAULT 0,",
+               "expires BIGINT UNSIGNED NOT NULL DEFAULT 0,",
                "PRIMARY KEY (id),",
                "INDEX (password)",
                ");",
@@ -148,7 +149,7 @@ class TrojanDatabase:
         fullhash = hashlib.sha224('{}:{}'.format(username, password).encode('utf-8')).hexdigest()
         self.cursor.execute("INSERT INTO {} (username, password) VALUES ('{}', '{}')".format(self.table, username, fullhash))
         # self.cursor.execute("INSERT INTO {} SHA2(CONCAT(username, ':', password)', 224) VALUES ('{}', '{}')".format(self.table, username, password))
-        # self.connection.commit()
+        self.connection.commit()
         return 0
 
     @show_affection
@@ -359,7 +360,7 @@ def main():
     """
     # Create database controller connection
     try:
-        trojan_db = TrojanDatabase('127.0.0.1', 'trojan', 'thisisthetrojandbpassword', 'trojan', 'users')
+        trojan_db = TrojanDatabase('127.0.0.1', 'trojan', 'trojan', 'trojan', 'users')
     except (MySQLdb.OperationalError) as e:
         Avalon.error('Error establishing connection to MySQL/MariaDB')
         Avalon.error('Please check your settings')
